@@ -50,6 +50,16 @@ var client = &http.Client{
 
 // RequestListURLs requests and parses list from the given URL
 func RequestListURLs(url string) (s []string, err error) {
+	resp, err := req(url)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	return ReadList(resp.Body)
+}
+
+func req(url string) (h *http.Response, err error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return
@@ -60,7 +70,6 @@ func RequestListURLs(url string) (s []string, err error) {
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
 
-	return ReadList(resp.Body)
+	return resp, err
 }

@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/google/go-github/v43/github"
 	"golang.org/x/oauth2"
@@ -47,100 +46,125 @@ func main() {
 	}
 	_ = mainRepo
 
-	forks, err := util.LoadAllForks(client, repoOwner, repoName)
-	if err != nil {
-		log.Fatalf("loading forks: %s\n", err.Error())
-	}
+	// forks, err := util.LoadAllForks(client, repoOwner, repoName)
+	// if err != nil {
+	// 	log.Fatalf("loading forks: %s\n", err.Error())
+	// }
 
-	forks = append([]*github.Repository{mainRepo}, forks...)
+	// forks = append([]*github.Repository{mainRepo}, forks...)
 
-	log.Printf("[Info] Fetched %d forks\n", len(forks))
+	// log.Printf("[Info] Fetched %d forks\n", len(forks))
 
 	var filterLists = make(map[string][]ListFileInfo)
 
-	for _, fork := range forks {
-		// Only look at forks with a compatible license
-		if fork.License == nil || !strings.EqualFold(fork.License.GetSPDXID(), "MIT") {
-			continue
-		}
+	// for _, fork := range forks {
+	// 	// Only look at forks with a compatible license
+	// 	if fork.License == nil || !strings.EqualFold(fork.License.GetSPDXID(), "MIT") {
+	// 		continue
+	// 	}
 
-		fc, listFiles, _, err := client.Repositories.GetContents(ctx, fork.GetOwner().GetLogin(), fork.GetName(), "lists", nil)
-		if err != nil {
-			log.Printf("[Warning] Error listing %s/%s: %s\n", fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
-			continue
-		}
-		if fc != nil {
-			log.Printf("[Warning] Invalid file \"lists\" instead of directory in %s/%s\n", fork.GetOwner().GetLogin(), fork.GetName())
-			continue
-		}
+	// 	forkUser, forkRepoName := fork.GetOwner().GetLogin(), fork.GetName()
 
-		latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, fork.GetOwner().GetLogin(), fork.GetName())
-		if err != nil {
-			log.Printf("[Warning] No latest release available in %s/%s: %s\n", fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
-			continue
-		}
-		if len(latestRelease.Assets) == 0 {
-			continue
-		}
-		if time.Since(latestRelease.GetCreatedAt().Time) > 7*24*time.Hour {
-			log.Printf("[Warning] Looks like %s/%s is no longer updated\n", fork.GetOwner().GetLogin(), fork.GetName())
-			continue
-		}
+	// 	fc, listFiles, _, err := client.Repositories.GetContents(ctx, forkUser, forkRepoName, "lists", nil)
+	// 	if err != nil {
+	// 		log.Printf("[Warning] Error listing %s/%s: %s\n", forkUser, forkRepoName, err.Error())
+	// 		continue
+	// 	}
+	// 	if fc != nil {
+	// 		log.Printf("[Warning] Invalid file \"lists\" instead of directory in %s/%s\n", forkUser, forkRepoName)
+	// 		continue
+	// 	}
 
-		for _, listFile := range listFiles {
-			fn := listFile.GetName()
-			// We only want text files, just like filtrite itself
-			if listFile.GetType() != "file" || !strings.HasSuffix(fn, ".txt") ||
-				listFile.GetSize() == 0 || ignoredFileNames[fn] {
-				continue
-			}
+	// 	latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, forkUser, forkRepoName)
+	// 	if err != nil {
+	// 		log.Printf("[Warning] No latest release available in %s/%s: %s\n", forkUser, forkRepoName, err.Error())
+	// 		continue
+	// 	}
+	// 	if len(latestRelease.Assets) == 0 {
+	// 		continue
+	// 	}
 
-			datFileName := fn[:len(fn)-4] + ".dat"
-			asset := getAssetByName(latestRelease.Assets, datFileName)
-			if asset == nil {
-				log.Printf("[Warning] Looks like the list %q (%q) in %s/%s is not being released\n", fn, datFileName, fork.GetOwner().GetLogin(), fork.GetName())
-				continue
-			}
+	// 	for _, listFile := range listFiles {
+	// 		fn := listFile.GetName()
+	// 		// We only want text files, just like filtrite itself
+	// 		if listFile.GetType() != "file" || !strings.HasSuffix(fn, ".txt") ||
+	// 			listFile.GetSize() == 0 || ignoredFileNames[fn] {
+	// 			continue
+	// 		}
 
-			lists, err := util.RequestListURLs(listFile.GetDownloadURL())
-			if err != nil {
-				log.Printf("requesting list %q in %s/%s: %s\n", fn, fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
-				continue
-			}
-			if len(lists) == 0 {
-				continue
-			}
+	// 		datFileName := fn[:len(fn)-4] + ".dat"
+	// 		asset := getAssetByName(latestRelease.Assets, datFileName)
+	// 		if asset == nil {
+	// 			log.Printf("[Warning] Looks like the list %q (%q) in %s/%s is not being released\n", fn, datFileName, forkUser, forkRepoName)
+	// 			continue
+	// 		}
+	// 		// Ignore outdated repos; however still support repos that decided to always use the same release (instead of creating a new release, they just update the current release)
+	// 		if time.Since(asset.GetUpdatedAt().Time) > 7*24*time.Hour {
+	// 			continue
+	// 		}
 
-			filterLists[fn] = append(filterLists[fn], ListFileInfo{
-				Name:      fn,
-				RepoOwner: fork.GetOwner().GetLogin(),
-				RepoName:  fork.GetName(),
-				ListURL:   listFile.GetDownloadURL(),
-				URLs:      lists,
-			})
-		}
-	}
+	// 		lists, err := util.RequestListURLs(listFile.GetDownloadURL())
+	// 		if err != nil {
+	// 			log.Printf("requesting list %q in %s/%s: %s\n", fn, forkUser, forkRepoName, err.Error())
+	// 			continue
+	// 		}
+	// 		if len(lists) == 0 {
+	// 			continue
+	// 		}
 
-	// Afterwards bring it into a presentable format
+	// 		filterLists[fn] = append(filterLists[fn], ListFileInfo{
+	// 			Name: fn,
 
-	data, err := json.Marshal(filterLists)
+	// 			RepoOwner: forkUser,
+	// 			RepoName:  forkRepoName,
+	// 			URLs:      lists,
+
+	// 			ListURL:       listFile.GetDownloadURL(),
+	// 			FilterFileURL: getLatestURL(asset, forkUser, forkRepoName),
+	// 		})
+	// 	}
+	// }
+
+	// // Afterwards bring it into a presentable format
+
+	// data, err := json.Marshal(filterLists)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// ioutil.WriteFile("lists.json", data, 0o664)
+
+	c, err := ioutil.ReadFile("lists.json")
 	if err != nil {
 		panic(err)
 	}
 
-	ioutil.WriteFile("lists.json", data, 0o664)
-
-	// c, err := ioutil.ReadFile("lists.json")
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// err = json.Unmarshal(c, &filterLists)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	err = json.Unmarshal(c, &filterLists)
+	if err != nil {
+		panic(err)
+	}
 
 	var filterListNameMapping = make(map[string]string)
+
+	for _, filters := range filterLists {
+		for _, filter := range filters {
+			for _, u := range filter.URLs {
+				if _, ok := filterListNameMapping[u]; ok {
+					continue
+				}
+
+				name, err := util.GetFilterListNameFromURL(u)
+				if err != nil {
+					log.Printf("[Warning] Could not get filter list title for %q", u)
+					continue
+				}
+
+				filterListNameMapping[u] = name
+			}
+		}
+	}
+
+	fmt.Println(filterListNameMapping)
 
 	_ = filterListNameMapping
 }
@@ -155,6 +179,12 @@ type ListFileInfo struct {
 	ListURL string
 
 	URLs []string
+}
+
+type PresentableListFile struct {
+	DisplayName string
+
+	Info ListFileInfo
 }
 
 var ignoredFileNames = map[string]bool{
