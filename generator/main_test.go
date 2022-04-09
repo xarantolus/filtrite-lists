@@ -15,6 +15,7 @@ func Test_makeListTitle(t *testing.T) {
 		{"bromite-lite", "Bromite Lite"},
 		{"ublock", "uBlock"},
 		{"adblock", "AdBlock"},
+		{"Bromite 4pda", "Bromite 4pda"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

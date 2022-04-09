@@ -37,7 +37,7 @@ export default defineComponent({
 
 <template>
     <li>
-        <div class="card border spacing">
+        <div class="card filter-box">
             <div class="card-content">
                 <h4 class="title is-4">{{ list.display_name }}</h4>
                 <h5 class="subtitle is-5">
@@ -59,6 +59,7 @@ export default defineComponent({
                 <a
                     @click.prevent="copyURL"
                     class="card-footer-item copy"
+                    :href="list.filter_file_url"
                 >{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
                 <a
                     target="_blank"
@@ -71,11 +72,16 @@ export default defineComponent({
 </template>
 
 <style scoped>
-.border {
+.filter-box {
+ background:   #222;
     border: 2px solid grey;
-}
-.spacing {
     margin-bottom: 2%;
+}
+
+summary {
+    width: 100%;
+    cursor: pointer;
+    padding: 2.5%;
 }
 
 .copy {

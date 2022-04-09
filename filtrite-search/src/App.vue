@@ -53,6 +53,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--font-color);
-  margin-top: 60px;
+  margin-top: 5%;
 }
 </style>
