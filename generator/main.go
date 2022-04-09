@@ -129,7 +129,7 @@ var correctCasingReplacer = strings.NewReplacer(
 
 func makeListTitle(name string) (out string) {
 	fields := strings.FieldsFunc(name, func(r rune) bool {
-		return !unicode.IsLetter(r)
+		return !(unicode.IsLetter(r) || unicode.IsNumber(r))
 	})
 
 	return correctCasingReplacer.Replace(strings.Title(strings.ToLower(strings.Join(fields, " "))))
