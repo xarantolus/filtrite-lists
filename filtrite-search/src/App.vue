@@ -8,7 +8,7 @@ import filter_lists from './filterlists.json';
   <header></header>
 
   <main>
-    <ListSearch :filter_lists="filter_lists" ></ListSearch>
+    <ListSearch :filter_lists="filter_lists"></ListSearch>
   </main>
 </template>
 
@@ -45,6 +45,9 @@ body {
   height: 100vh;
 }
 #app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1%;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

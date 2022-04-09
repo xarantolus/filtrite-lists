@@ -35,7 +35,7 @@ export default defineComponent({
             <div class="control">
                 <input class="input" autofocus type="text" v-model="query" />
 
-                <ul>
+                <ul class="spacing">
                     <FilterList
                         v-for="item in searchResults"
                         v-bind:key="item.filter_file_url"
@@ -46,3 +46,11 @@ export default defineComponent({
         </div>
     </div>
 </template>
+
+
+
+<style scoped>
+.spacing {
+    margin-top: 2%;
+}
+</style>
