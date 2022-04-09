@@ -2,6 +2,8 @@
 import { defineComponent, type PropType } from 'vue'
 import type { FilterListData } from '../model/FilterList';
 
+import Highlighter from 'vue-highlight-words';
+
 import copy from 'copy-to-clipboard';
 
 export default defineComponent({
@@ -9,12 +11,23 @@ export default defineComponent({
         list: {
             type: Object as PropType<FilterListData>,
             required: true
+        },
+        search: {
+            type: String,
         }
+    },
+    components: {
+        Highlighter,
     },
     data() {
         return {
             copied: false,
             error: "",
+        }
+    },
+    computed: {
+        keywords(): Array<string> {
+            return this.search?.split(/\s+/) ?? [];
         }
     },
     methods: {
@@ -39,18 +52,36 @@ export default defineComponent({
     <li>
         <div class="card filter-box">
             <div class="card-content">
-                <h4 class="title is-4">{{ list.display_name }}</h4>
+                <h4>
+                    <Highlighter
+                        class="title is-4"
+                        highlightClassName="highlight"
+                        :searchWords="keywords"
+                        :autoEscape="true"
+                        :textToHighlight="list.display_name"
+                    />
+                </h4>
                 <h5 class="subtitle is-5">
-                    <a
-                        target="_blank"
-                        :href="'https://github.com/' + list.repo_owner"
-                    >@{{ list.repo_owner }}</a>
+                    <a target="_blank" :href="'https://github.com/' + list.repo_owner">
+                        <Highlighter
+                            class="title is-5"
+                            :searchWords="keywords"
+                            :autoEscape="true"
+                            :textToHighlight="'@' + list.repo_owner"
+                        />
+                    </a>
                 </h5>
                 <details class="content has-text-left">
                     <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
                     <ul>
                         <li v-bind:key="item.url" v-for="item in list.urls">
-                            <a :href="item.url">{{ item.title }}</a>
+                            <a :href="item.url">
+                                <Highlighter
+                                    :searchWords="keywords"
+                                    :autoEscape="true"
+                                    :textToHighlight="item.title"
+                                />
+                            </a>
                         </li>
                     </ul>
                 </details>
@@ -73,7 +104,7 @@ export default defineComponent({
 
 <style scoped>
 .filter-box {
- background:   #222;
+    background: #222;
     border: 2px solid grey;
     margin-bottom: 2%;
 }

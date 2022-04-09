@@ -16,6 +16,7 @@ export default defineComponent({
             query: "",
             searcher: new FuzzySearch(this.filter_lists ?? [], ["display_name", "urls.title", "repo_owner", "repo_name"], {
                 sort: true,
+                caseSensitive: false,
             }),
         };
     },
@@ -24,7 +25,7 @@ export default defineComponent({
             return this.searcher.search(this.query);
         }
     },
-    components: { FilterList }
+    components: { FilterList },
 })
 </script>
 
@@ -33,13 +34,20 @@ export default defineComponent({
         <h5 class="title is-5">Bromite filter search</h5>
         <div class="field">
             <div class="control">
-                <input class="input" autofocus type="text" v-model="query" />
+                <input
+                    class="input"
+                    placeholder="Search filter lists..."
+                    autofocus
+                    type="text"
+                    v-model="query"
+                />
 
                 <ul class="spacing">
                     <FilterList
                         v-for="item in searchResults"
                         v-bind:key="item.filter_file_url"
                         :list="item"
+                        :search="query"
                     ></FilterList>
                 </ul>
             </div>
