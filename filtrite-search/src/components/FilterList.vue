@@ -60,8 +60,8 @@ export default defineComponent({
                 >⭐{{ list.stars }}</span>
                 <h4>
                     <Highlighter
-                        class="title is-4"
                         highlightClassName="highlight"
+                        class="title is-4"
                         :searchWords="keywords"
                         :autoEscape="true"
                         :textToHighlight="list.display_name"
@@ -70,6 +70,7 @@ export default defineComponent({
                 <h6 class="subtitle is-6">
                     <a target="_blank" :href="'https://github.com/' + list.repo_owner">
                         <Highlighter
+                            highlightClassName="highlight"
                             :searchWords="keywords"
                             :autoEscape="true"
                             :textToHighlight="'@' + list.repo_owner"
@@ -82,6 +83,7 @@ export default defineComponent({
                         <li v-bind:key="item.url" v-for="item in list.urls">
                             <a :href="item.url">
                                 <Highlighter
+                                    highlightClassName="highlight"
                                     :searchWords="keywords"
                                     :autoEscape="true"
                                     :textToHighlight="item.title"
@@ -93,30 +95,31 @@ export default defineComponent({
             </div>
             <footer class="card-footer">
                 <a
-                    @click.prevent="copyURL"
-                    class="card-footer-item copy"
-                    :href="list.filter_file_url"
-                >{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
-                <a
                     target="_blank"
                     :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name"
                     class="card-footer-item github"
                 >
                     <Highlighter
+                        highlightClassName="highlight"
                         :searchWords="keywords"
                         :autoEscape="true"
                         :textToHighlight="list.repo_owner + '/' + list.repo_name"
                     />
                 </a>
+                <a
+                    @click.prevent="copyURL"
+                    class="card-footer-item copy"
+                    :href="list.filter_file_url"
+                >{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
             </footer>
         </div>
     </li>
 </template>
 
-<style scoped>
+<style>
 .filter-box {
-    background: #222;
-    border: 2px solid grey;
+    background: var(--card-color);
+    border: 2px solid var(--border-color);
     margin-bottom: 2%;
 }
 
@@ -131,11 +134,15 @@ summary {
 }
 
 .copy {
-    background-color: green;
-    color: #fff;
+    background-color: var(--green);
+    color: var(--font-color);
 }
 .github {
-    background-color: rgb(63, 63, 63);
-    color: #ddd;
+    background-color: var(--button-color);
+    color: var(--font-color);
+}
+
+.highlight {
+    background-color: var(--yellow);
 }
 </style>

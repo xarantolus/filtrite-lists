@@ -19,21 +19,21 @@ import filter_lists from './filterlists.json';
 :root {
   --font-color: #1f2933;
   --border-color: #ccc;
-  --table-hover-color: #f0e8ff;
   --green: #00ff55;
-  --red: #ff94a1;
+  --yellow: #f7ae40;
   --blue: #6fcaff;
-  --hidden-text: #d1d1d1;
+  --card-color: #fff;
+  --button-color: #bbb;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --font-color: #eed7c0;
     --border-color: #333;
-    --table-hover-color: #1c0f35;
     --green: #158c11;
-    --red: #860000;
+    --yellow: #df8b1d;
     --blue: #004770;
-    --hidden-text: #616161;
+    --card-color: #222;
+    --button-color: #333;
   }
   /* Some additional color fixes */
   .help {

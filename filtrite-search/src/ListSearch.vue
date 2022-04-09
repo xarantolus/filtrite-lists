@@ -46,8 +46,9 @@ export default defineComponent({
                     class="input"
                     placeholder="Search filter lists..."
                     autofocus
-                    type="text"
-                    v-model="query"
+                    type="search"
+                    :value="query"
+                    @input="event => query = (event?.target as HTMLInputElement).value"
                 />
 
                 <ul class="spacing">
