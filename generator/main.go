@@ -14,9 +14,10 @@ import (
 	"time"
 	"unicode"
 
+	"xarantolus/generator/util"
+
 	"github.com/google/go-github/v43/github"
 	"golang.org/x/oauth2"
-	"xarantolus/generator/util"
 )
 
 func main() {
@@ -106,7 +107,7 @@ func main() {
 		output = append(output, makePresentable(info, filterListUrlNameMapping))
 	}
 
-	err = util.SaveJSON("output.json", output)
+	err = util.SaveJSON("filterlists.json", output)
 	if err != nil {
 		log.Fatalf("saving output file: %s\n", err.Error())
 	}
