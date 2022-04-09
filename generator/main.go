@@ -75,18 +75,12 @@ func main() {
 
 	// Afterwards bring it into a presentable format
 
-	util.SaveJSON("lists.json", filterLists)
-	util.LoadJSON("lists.json", &filterLists)
-
 	var (
 		filterListUrlNameMapping  = make(map[string]string)
 		filterListNameMappingLock sync.Mutex
 	)
 
 	var deduplicatedFilterlists = deduplicateFilterlists(filterLists)
-
-	util.SaveJSON("lists-dedup.json", deduplicatedFilterlists)
-	util.LoadJSON("lists-dedup.json", &deduplicatedFilterlists)
 
 	var urls = getUniqueURLs(deduplicatedFilterlists)
 
@@ -106,16 +100,17 @@ func main() {
 		filterListNameMappingLock.Unlock()
 	})
 
-	util.SaveJSON("url-mapping.json", filterListUrlNameMapping)
-	util.LoadJSON("url-mapping.json", filterListUrlNameMapping)
-
 	var output []PresentableListFile
 
 	for _, info := range deduplicatedFilterlists {
 		output = append(output, makePresentable(info, filterListUrlNameMapping))
 	}
 
-	util.SaveJSON("output.json", output)
+	err = util.SaveJSON("output.json", output)
+	if err != nil {
+		log.Fatalf("saving output file: %s\n", err.Error())
+	}
+
 }
 
 func stripExtension(p string) string {
