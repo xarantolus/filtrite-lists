@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -54,14 +55,19 @@ func main() {
 		log.Fatalf("loading forks: %s\n", err.Error())
 	}
 
+	// We sort forks by an arbitrary measure of importance
+	sort.Slice(forks, func(i, j int) bool {
+		return forks[i].GetStargazersCount() > forks[j].GetStargazersCount()
+	})
+	// Add the main repo at the beginning, regardless of count
 	forks = append([]*github.Repository{mainRepo}, forks...)
 
 	log.Printf("[Info] Fetched %d forks\n", len(forks))
 
-	var filterLists = make(map[string][]ListFileInfo)
+	var filterLists []ListFileInfo
 
 	for _, fork := range forks {
-		err := getForkInfo(client, fork, filterLists)
+		filterLists, err = getForkInfo(client, fork, filterLists)
 		if err != nil {
 			log.Printf("[Warning] Error for %s/%s: %s\n", fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
 		}
@@ -73,14 +79,11 @@ func main() {
 	util.LoadJSON("lists.json", &filterLists)
 
 	var (
-		filterListNameMapping     = make(map[string]string)
+		filterListUrlNameMapping  = make(map[string]string)
 		filterListNameMappingLock sync.Mutex
 	)
 
-	var deduplicatedFilterlists = make(map[string][]ListFileInfo)
-	for k, fls := range filterLists {
-		deduplicatedFilterlists[k] = deduplicateFilterlists(fls)
-	}
+	var deduplicatedFilterlists = deduplicateFilterlists(filterLists)
 
 	util.SaveJSON("lists-dedup.json", deduplicatedFilterlists)
 	util.LoadJSON("lists-dedup.json", &deduplicatedFilterlists)
@@ -99,22 +102,20 @@ func main() {
 		}
 
 		filterListNameMappingLock.Lock()
-		filterListNameMapping[u] = name
+		filterListUrlNameMapping[u] = name
 		filterListNameMappingLock.Unlock()
 	})
 
-	util.SaveJSON("url-mapping.json", filterListNameMapping)
-	util.LoadJSON("url-mapping.json", filterListNameMapping)
+	util.SaveJSON("url-mapping.json", filterListUrlNameMapping)
+	util.LoadJSON("url-mapping.json", filterListUrlNameMapping)
 
-	fmt.Println(filterListNameMapping)
+	var output []PresentableListFile
 
-	// var output []PresentableListFile
+	for _, info := range deduplicatedFilterlists {
+		output = append(output, makePresentable(info, filterListUrlNameMapping))
+	}
 
-	// for _, info := range filterLists {
-
-	// }
-
-	_ = filterListNameMapping
+	util.SaveJSON("output.json", output)
 }
 
 func stripExtension(p string) string {
@@ -144,6 +145,8 @@ type ListFileInfo struct {
 
 	FilterFileURL string `json:"filter_file_url"`
 
+	Stars int `json:"stars"`
+
 	RepoOwner string `json:"repo_owner"`
 	RepoName  string `json:"repo_name"`
 
@@ -152,9 +155,42 @@ type ListFileInfo struct {
 	URLs []string `json:"urls"`
 }
 
+func makePresentable(info ListFileInfo, urlTitles map[string]string) PresentableListFile {
+	var urls []URLMapping
+	for _, u := range info.URLs {
+		ut := strings.TrimSpace(urlTitles[u])
+		if ut == "" {
+			ut = "Unknown"
+		}
+		urls = append(urls, URLMapping{
+			URL:   u,
+			Title: ut,
+		})
+	}
+
+	return PresentableListFile{
+		DisplayName:   info.Name,
+		URLs:          urls,
+		FilterFileURL: info.FilterFileURL,
+		Stars:         info.Stars,
+		RepoOwner:     info.RepoOwner,
+		RepoName:      info.RepoName,
+		ListURL:       info.ListURL,
+	}
+}
+
 type PresentableListFile struct {
 	DisplayName string       `json:"display_name"`
-	Info        ListFileInfo `json:"info"`
+	URLs        []URLMapping `json:"urls"`
+
+	FilterFileURL string `json:"filter_file_url"`
+
+	Stars int `json:"stars"`
+
+	RepoOwner string `json:"repo_owner"`
+	RepoName  string `json:"repo_name"`
+
+	ListURL string `json:"list_url"`
 }
 
 type URLMapping struct {
@@ -166,17 +202,15 @@ var ignoredFileNames = map[string]bool{
 	"bromite-default.txt": true,
 }
 
-func getUniqueURLs(info map[string][]ListFileInfo) (urls []string) {
+func getUniqueURLs(info []ListFileInfo) (urls []string) {
 	var deduplicate = map[string]bool{}
-	for _, filters := range info {
-		for _, filter := range filters {
-			for _, u := range filter.URLs {
-				if deduplicate[u] {
-					continue
-				}
-				deduplicate[u] = true
-				urls = append(urls, u)
+	for _, fl := range info {
+		for _, u := range fl.URLs {
+			if deduplicate[u] {
+				continue
 			}
+			deduplicate[u] = true
+			urls = append(urls, u)
 		}
 	}
 
@@ -260,7 +294,8 @@ func containsAll(subset, set []string) bool {
 	return true
 }
 
-func getForkInfo(client *github.Client, fork *github.Repository, filterLists map[string][]ListFileInfo) (err error) {
+func getForkInfo(client *github.Client, fork *github.Repository, filterLists []ListFileInfo) (out []ListFileInfo, err error) {
+	out = filterLists
 	// Only look at forks with a compatible license
 	if fork.License == nil || !strings.EqualFold(fork.License.GetSPDXID(), "MIT") {
 		err = fmt.Errorf("license identifier incompatible, must be MIT")
@@ -320,7 +355,7 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists map
 			continue
 		}
 
-		filterLists[fn] = append(filterLists[fn], ListFileInfo{
+		filterLists = append(filterLists, ListFileInfo{
 			Name: makeListTitle(stripExtension(fn)),
 
 			RepoOwner: forkUser,
@@ -329,7 +364,10 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists map
 
 			ListURL:       listFile.GetDownloadURL(),
 			FilterFileURL: getLatestURL(asset, forkUser, forkRepoName),
+
+			Stars: fork.GetStargazersCount(),
 		})
 	}
-	return
+
+	return filterLists, nil
 }
