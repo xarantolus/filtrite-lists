@@ -12,9 +12,16 @@ export default defineComponent({
         },
     },
     data() {
+        const processedFilterlists = this.filter_lists.map(list => {
+            return {
+                ...list,
+                search_data: [list.display_name, list.repo_name, list.repo_owner, ...(list.urls.map(u => [u.title, u.url]).flat())].join(" ").toLowerCase()
+            };
+        });
+
         return {
             query: "",
-            searcher: new FuzzySearch(this.filter_lists ?? [], ["display_name", "urls.title", "repo_owner", "repo_name"], {
+            searcher: new FuzzySearch(processedFilterlists, ["display_name", "repo_name", "repo_owner", "search_data"], {
                 sort: true,
                 caseSensitive: false,
             }),
@@ -22,7 +29,8 @@ export default defineComponent({
     },
     computed: {
         searchResults(): Array<FilterListData> {
-            return this.searcher.search(this.query);
+            let qsplit = this.query.toLowerCase().split(/\s+/);
+            return this.searcher.search(this.query).filter(i => qsplit.every(w => i.search_data.includes(w)));
         }
     },
     components: { FilterList },

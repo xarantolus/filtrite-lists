@@ -52,6 +52,12 @@ export default defineComponent({
     <li>
         <div class="card filter-box">
             <div class="card-content">
+                <span
+                    v-if="list?.stars ?? 0 > 0"
+                    style="position: absolute; top: 0; right: 0;"
+                    class="card-header-icon"
+                    aria-label="more options"
+                >⭐{{ list.stars }}</span>
                 <h4>
                     <Highlighter
                         class="title is-4"
@@ -61,16 +67,15 @@ export default defineComponent({
                         :textToHighlight="list.display_name"
                     />
                 </h4>
-                <h5 class="subtitle is-5">
+                <h6 class="subtitle is-6">
                     <a target="_blank" :href="'https://github.com/' + list.repo_owner">
                         <Highlighter
-                            class="title is-5"
                             :searchWords="keywords"
                             :autoEscape="true"
                             :textToHighlight="'@' + list.repo_owner"
                         />
                     </a>
-                </h5>
+                </h6>
                 <details class="content has-text-left">
                     <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
                     <ul>
@@ -96,7 +101,13 @@ export default defineComponent({
                     target="_blank"
                     :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name"
                     class="card-footer-item github"
-                >View on GitHub</a>
+                >
+                    <Highlighter
+                        :searchWords="keywords"
+                        :autoEscape="true"
+                        :textToHighlight="list.repo_owner + '/' + list.repo_name"
+                    />
+                </a>
             </footer>
         </div>
     </li>
@@ -109,10 +120,14 @@ export default defineComponent({
     margin-bottom: 2%;
 }
 
+.subtitle {
+    margin-bottom: 0.5rem !important;
+}
+
 summary {
     width: 100%;
     cursor: pointer;
-    padding: 2.5%;
+    padding: 0.5%;
 }
 
 .copy {
