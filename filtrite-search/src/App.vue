@@ -38,7 +38,7 @@ export default defineComponent({
     <p v-else-if="error">Error loading data:<br>{{ error }}</p>
     <ListSearch v-else :filter_lists="filter_lists"></ListSearch>
   </main>
-  <footer>
+  <footer class="ghlink">
     This page is <a href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>
 </template>
 
@@ -58,7 +58,7 @@ export default defineComponent({
 @media (prefers-color-scheme: dark) {
   :root {
     --font-color: #eed7c0;
-    --border-color: #333;
+    --border-color: #999;
     --green: #158c11;
     --yellow: #df8b1d;
     --blue: #004770;
@@ -70,6 +70,10 @@ export default defineComponent({
   .help {
     color: #aaa;
   }
+
+  .invert-dm {
+    filter: invert()
+  }
 }
 
 html,
@@ -77,7 +81,7 @@ body {
   height: 100vh;
 }
 
-footer {
+footer.ghlink {
   bottom: 0;
   padding-top: 2.5%;
   text-align: center;

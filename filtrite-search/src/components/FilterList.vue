@@ -43,7 +43,7 @@ export default defineComponent({
                 this.copied = false;
                 this.error = "";
             }, 750);
-        }
+        },
     }
 })
 </script>
@@ -52,29 +52,13 @@ export default defineComponent({
     <li>
         <div class="card filter-box">
             <div class="card-content">
-                <span
-                    v-if="list?.stars ?? 0 > 0"
-                    style="position: absolute; top: 0; right: 0;"
-                    class="card-header-icon"
-                    aria-label="more options"
-                >⭐{{ list.stars }}</span>
+                <span v-if="list?.stars ?? 0 > 0" style="position: absolute; top: 0; right: 0;" class="card-header-icon" aria-label="more options">⭐{{ list.stars }}</span>
                 <h4>
-                    <Highlighter
-                        highlightClassName="highlight"
-                        class="title is-4"
-                        :searchWords="keywords"
-                        :autoEscape="true"
-                        :textToHighlight="list.display_name"
-                    />
+                    <Highlighter highlightClassName="highlight" class="title is-4" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.display_name" />
                 </h4>
                 <h6 class="subtitle is-6">
                     <a target="_blank" :href="'https://github.com/' + list.repo_owner">
-                        <Highlighter
-                            highlightClassName="highlight"
-                            :searchWords="keywords"
-                            :autoEscape="true"
-                            :textToHighlight="'@' + list.repo_owner"
-                        />
+                        <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="'@' + list.repo_owner" />
                     </a>
                 </h6>
                 <details class="content has-text-left">
@@ -82,44 +66,28 @@ export default defineComponent({
                     <ul>
                         <li v-bind:key="item.url" v-for="item in list.urls">
                             <a :href="item.url">
-                                <Highlighter
-                                    highlightClassName="highlight"
-                                    :searchWords="keywords"
-                                    :autoEscape="true"
-                                    :textToHighlight="item.title"
-                                />
+                                <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="item.title" />
                             </a>
                         </li>
                     </ul>
                 </details>
             </div>
             <footer class="card-footer">
-                <a
-                    target="_blank"
-                    :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name"
-                    class="card-footer-item github"
-                >
-                    <Highlighter
-                        highlightClassName="highlight"
-                        :searchWords="keywords"
-                        :autoEscape="true"
-                        :textToHighlight="list.repo_owner + '/' + list.repo_name"
-                    />
+                <a target="_blank" :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name" class="card-footer-item github">
+                    <span class="icon" style="padding-right: 2.5%;">
+                        <img class="invert-dm" src="@/assets/GitHub-dark.png">
+                    </span>
+                    <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.repo_owner + '/' + list.repo_name" />
                 </a>
-                <a
-                    @click.prevent="copyURL"
-                    class="card-footer-item copy"
-                    :href="list.filter_file_url"
-                >{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
+                <a @click.prevent="copyURL" class="card-footer-item copy" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
             </footer>
-        </div>
-    </li>
+        </div>    </li>
 </template>
 
 <style>
 .filter-box {
     background: var(--card-color);
-    border: 2px solid var(--border-color);
+    border: 3px solid var(--border-color);
     margin-bottom: 2%;
 }
 
@@ -137,9 +105,11 @@ summary {
     background-color: var(--green);
     color: var(--font-color);
 }
+
 .github {
     background-color: var(--button-color);
     color: var(--font-color);
+    border: none;
 }
 
 .highlight {
