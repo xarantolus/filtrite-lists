@@ -1,14 +1,42 @@
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from "vue";
 import ListSearch from "./ListSearch.vue";
+import type { FilterListData } from "./model/FilterList";
+import { jsonp } from 'vue-jsonp'
 
-import filter_lists from './filterlists.json';
+const filtriteListURL = "https://github.com/xarantolus/filtrite-lists/releases/latest/download/filterlists_jsonp.js";
+
+export default defineComponent({
+  data() {
+    return {
+      filter_lists: [] as Array<FilterListData>,
+      loading: true,
+      error: ""
+    }
+  },
+  async mounted() {
+    try {
+      let resp = await jsonp<Array<FilterListData>>(filtriteListURL, {
+        callbackQuery: 'cb',
+        callbackName: 'jsonp',
+      });
+
+      this.filter_lists = resp;
+    } catch (e: any) {
+      this.error = JSON.stringify(e);
+    } finally {
+      this.loading = false;
+    }
+  },
+  components: { ListSearch }
+});
 </script>
 
 <template>
-  <header></header>
-
   <main>
-    <ListSearch :filter_lists="filter_lists"></ListSearch>
+    <p v-if="loading">Loading data...</p>
+    <p v-else-if="error">Error loading data:<br>{{ error }}</p>
+    <ListSearch v-else :filter_lists="filter_lists"></ListSearch>
   </main>
 </template>
 

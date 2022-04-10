@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
@@ -14,9 +16,10 @@ import (
 	"time"
 	"unicode"
 
+	"xarantolus/generator/util"
+
 	"github.com/google/go-github/v43/github"
 	"golang.org/x/oauth2"
-	"xarantolus/generator/util"
 )
 
 func main() {
@@ -33,6 +36,10 @@ func main() {
 	repoName := os.Getenv("INITIAL_REPO_NAME")
 	if strings.TrimSpace(repoName) == "" {
 		repoName = "filtrite"
+	}
+	outputFile := os.Getenv("OUTPUT_FILE")
+	if strings.TrimSpace(outputFile) == "" {
+		outputFile = "filterlists_jsonp.js"
 	}
 
 	log.Printf("[Info] Working on %s/%s\n", repoOwner, repoName)
@@ -106,11 +113,19 @@ func main() {
 		output = append(output, makePresentable(info, filterListUrlNameMapping))
 	}
 
-	err = util.SaveJSON("filterlists.json", output)
-	if err != nil {
-		log.Fatalf("saving output file: %s\n", err.Error())
-	}
+	var buf bytes.Buffer
 
+	buf.WriteString("jsonp(")
+	err = json.NewEncoder(&buf).Encode(output)
+	if err != nil {
+		panic(err)
+	}
+	buf.WriteString(")")
+
+	err = os.WriteFile(outputFile, buf.Bytes(), 0o666)
+	if err != nil {
+		log.Fatalf("writing result file: %s\n", err.Error())
+	}
 }
 
 func stripExtension(p string) string {

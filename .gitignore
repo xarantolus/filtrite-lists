@@ -1,2 +1,4 @@
 .vscode
 generator/**.json
+generator/**.js
+generator/**.exe
