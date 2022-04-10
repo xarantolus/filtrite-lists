@@ -3,7 +3,7 @@ name: Build Vue WebApp
 on:
   push:
     branches: [ main ]
-  
+
   workflow_dispatch:
 
 jobs:
@@ -19,3 +19,4 @@ jobs:
         username: 'xarantolus'
         reponame: 'filtrite-lists'
         token: ${{ secrets.GITHUB_TOKEN }}
+      working-directory: filtrite-search
