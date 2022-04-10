@@ -18,7 +18,7 @@ jobs:
         TMP_DIR="$(mktemp -d)"
         cp -r filtrite-search/* "$TMP_DIR"
         rm -rf *
-        cp -r "$TMP_DIR/*" .
+        cp -r $TMP_DIR/* .
 
     - id: Build-Vue
       uses: xRealNeon/VuePagesAction@1.0.1
