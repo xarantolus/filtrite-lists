@@ -19,7 +19,7 @@ export default defineComponent({
       let resp = await jsonp<Array<FilterListData>>(filtriteListURL, {
         callbackQuery: 'cb',
         callbackName: 'jsonp',
-      });
+      }, 15000);
 
       this.filter_lists = resp;
     } catch (e: any) {
