@@ -8,9 +8,10 @@ func Test_getName(t *testing.T) {
 		wantName string
 		wantOk   bool
 	}{
-		{"Title: some list title", "some list title", true},
-		{"title: 🦄 list", "🦄 list", true},
-		{"  abp:subscribe?location=http%3A%2F%2Fpgl.yoyo.org%2Fadservers%2Fserverlist.php%3Fhostformat%3Dadblockplus%26mimetype%3Dplaintext&title=Peter%20Lowe%27s%20list", "Peter Lowe's list", true},
+		{"! Title: some list title", "some list title", true},
+		{"! title: 🦄 list", "🦄 list", true},
+		{"!  abp:subscribe?location=http%3A%2F%2Fpgl.yoyo.org%2Fadservers%2Fserverlist.php%3Fhostformat%3Dadblockplus%26mimetype%3Dplaintext&title=Peter%20Lowe%27s%20list", "Peter Lowe's list", true},
+		{"# Title: EasyList Germany", "EasyList Germany", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.line, func(t *testing.T) {

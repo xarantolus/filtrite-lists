@@ -16,7 +16,7 @@ func GetFilterListName(f io.Reader) (name string, err error) {
 	for scan.Scan() {
 		txt := strings.TrimSpace(scan.Text())
 
-		if len(txt) == 0 || !strings.HasPrefix(txt, "!") {
+		if len(txt) == 0 {
 			continue
 		}
 
@@ -37,7 +37,7 @@ func GetFilterListName(f io.Reader) (name string, err error) {
 
 func getName(line string) (name string, ok bool) {
 	trimmed := strings.TrimLeftFunc(line, func(r rune) bool {
-		return r == '!' || unicode.IsSpace(r)
+		return r == '!' || r == '#' || unicode.IsSpace(r)
 	})
 
 	if strings.HasPrefix(strings.ToLower(trimmed), "title") {
