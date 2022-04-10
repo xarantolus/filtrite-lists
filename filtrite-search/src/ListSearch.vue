@@ -29,8 +29,12 @@ export default defineComponent({
     },
     computed: {
         searchResults(): Array<FilterListData> {
-            let qsplit = this.query.toLowerCase().split(/\s+/);
-            return this.searcher.search(this.query).filter(i => qsplit.every(w => i.search_data.includes(w)));
+            let q = this.query.trim();
+            let qsplit = q.toLowerCase().split(/\s+/g).filter(v => v.trim().length > 0);
+            if (qsplit.length == 0) {
+                return this.filter_lists;
+            }
+            return this.searcher.search(q).filter(i => qsplit.every(w => i.search_data.includes(w)));
         }
     },
     components: { FilterList },
