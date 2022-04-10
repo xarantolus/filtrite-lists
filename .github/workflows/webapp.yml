@@ -3,6 +3,7 @@ name: Build Vue WebApp
 on:
   push:
     branches: [ main ]
+    paths: 'filtrite-search/**'
 
   workflow_dispatch:
 
