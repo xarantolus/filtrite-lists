@@ -49,7 +49,7 @@ export default defineComponent({
             <div class="control">
                 <input class="input" placeholder="Search filter lists..." autofocus type="search" :value="query" @input="event => query = (event?.target as HTMLInputElement).value" />
 
-                <p class="spacing" v-if="searchResults.length == 0">No results for this query.</p>
+                <p class="spacing" v-if="searchResults.length == 0">No results for this query. Maybe <a href="https://github.com/xarantolus/filtrite#using-your-own-filter-lists">create a new filter</a>?</p>
                 <ul v-else class="spacing">
                     <FilterList v-for="item in searchResults" v-bind:key="item.filter_file_url" :list="item" :search="query"></FilterList>
                 </ul>
