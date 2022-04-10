@@ -38,10 +38,11 @@ export default defineComponent({
     <p v-else-if="error">Error loading data:<br>{{ error }}</p>
     <ListSearch v-else :filter_lists="filter_lists"></ListSearch>
   </main>
+  <footer>
+    This page is <a href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>
 </template>
 
-<style>
-@import "../node_modules/bulma/css/bulma.min.css";
+<style>@import "../node_modules/bulma/css/bulma.min.css";
 @import "../node_modules/bulma-prefers-dark/css/bulma-prefers-dark.css";
 
 :root {
@@ -53,6 +54,7 @@ export default defineComponent({
   --card-color: #fff;
   --button-color: #bbb;
 }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --font-color: #eed7c0;
@@ -63,15 +65,24 @@ export default defineComponent({
     --card-color: #222;
     --button-color: #333;
   }
+
   /* Some additional color fixes */
   .help {
     color: #aaa;
   }
 }
+
 html,
 body {
   height: 100vh;
 }
+
+footer {
+  bottom: 0;
+  padding-top: 2.5%;
+  text-align: center;
+}
+
 #app {
   max-width: 1000px;
   margin: 0 auto;

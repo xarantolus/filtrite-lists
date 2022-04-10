@@ -51,7 +51,8 @@ export default defineComponent({
                     @input="event => query = (event?.target as HTMLInputElement).value"
                 />
 
-                <ul class="spacing">
+                <p class="spacing" v-if="searchResults.length == 0">No results for this query.</p>
+                <ul v-else class="spacing">
                     <FilterList
                         v-for="item in searchResults"
                         v-bind:key="item.filter_file_url"
