@@ -98,7 +98,7 @@ func main() {
 				return
 			}
 
-			name = stripExtension(parsed.Path)
+			name = makeListTitle(stripExtension(parsed.Path))
 		}
 
 		filterListNameMappingLock.Lock()

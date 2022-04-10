@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"net/url"
 	"strings"
 	"unicode"
 )
@@ -19,22 +20,10 @@ func GetFilterListName(f io.Reader) (name string, err error) {
 			continue
 		}
 
-		trimmed := strings.TrimLeftFunc(txt, func(r rune) bool {
-			return r == '!' || unicode.IsSpace(r)
-		})
-
-		if !strings.HasPrefix(strings.ToLower(trimmed), "title") {
-			continue
+		name, ok := getName(txt)
+		if ok {
+			return name, nil
 		}
-
-		split := strings.SplitN(trimmed, ":", 2)
-		if len(split) != 2 {
-			continue
-		}
-
-		name = strings.TrimSpace(split[1])
-
-		return
 	}
 
 	if err = scan.Err(); err != nil {
@@ -42,6 +31,37 @@ func GetFilterListName(f io.Reader) (name string, err error) {
 	}
 
 	err = fmt.Errorf("no name/title found in filter list")
+
+	return
+}
+
+func getName(line string) (name string, ok bool) {
+	trimmed := strings.TrimLeftFunc(line, func(r rune) bool {
+		return r == '!' || unicode.IsSpace(r)
+	})
+
+	if strings.HasPrefix(strings.ToLower(trimmed), "title") {
+		split := strings.SplitN(trimmed, ":", 2)
+		if len(split) != 2 {
+			return
+		}
+
+		name = strings.TrimSpace(split[1])
+
+		return name, true
+	}
+
+	const sub = "abp:subscribe"
+	if strings.HasPrefix(strings.ToLower(trimmed), sub) {
+		data, err := url.ParseQuery(trimmed[len(sub):])
+		if err != nil {
+			return
+		}
+		name = strings.TrimSpace(data.Get("title"))
+		if name != "" {
+			return name, true
+		}
+	}
 
 	return
 }

@@ -1,6 +1,9 @@
 name: Build filterlists
 
 on:
+  push:
+    paths: 'generator/**'
+
   schedule:
   - cron: "0 17 * * *"
 
