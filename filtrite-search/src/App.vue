@@ -39,7 +39,7 @@ export default defineComponent({
     <ListSearch v-else :filter_lists="filter_lists"></ListSearch>
   </main>
   <footer class="ghlink">
-    This page is <a href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>
+    This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>
 </template>
 
 <style>@import "../node_modules/bulma/css/bulma.min.css";

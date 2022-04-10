@@ -60,7 +60,7 @@ export default defineComponent({
                     <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
                     <ul>
                         <li v-bind:key="item.url" v-for="item in list.urls">
-                            <a :href="item.url">
+                            <a target="_blank" :href="item.url">
                                 <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="item.title" />
                             </a>
                         </li>
@@ -74,7 +74,7 @@ export default defineComponent({
                     </span>
                     <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.repo_owner + '/' + list.repo_name" />
                 </a>
-                <a @click.prevent="copyURL" class="card-footer-item copy" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
+                <a @click.prevent="copyURL" class="card-footer-item copy" target="_blank" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
             </footer>
         </div>    </li>
 </template>

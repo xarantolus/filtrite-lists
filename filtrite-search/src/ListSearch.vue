@@ -41,7 +41,7 @@ export default defineComponent({
     <div class="search-field">
         <h5 class="title is-5">Bromite filter search</h5>
         <div class="has-text-left">
-            <p>This page shows active forks of the <a href="https://github.com/xarantolus/filtrite">filtrite</a> project, a generator for custom AdBlock lists for <a href="https://bromite.org">Bromite</a>.</p>
+            <p>This page shows active forks of the <a target="_blank" href="https://github.com/xarantolus/filtrite">filtrite</a> project, a generator for custom AdBlock lists for <a target="_blank" href="https://bromite.org">Bromite</a>.</p>
             <p>Find a list matching your criteria (e.g. a list for your country), copy its filter URL and configure it as "Filters URL" in Bromites' AdBlock settings.</p>
         </div>
         <br>
@@ -49,7 +49,7 @@ export default defineComponent({
             <div class="control">
                 <input class="input" placeholder="Search filter lists..." autofocus type="search" :value="query" @input="event => query = (event?.target as HTMLInputElement).value" />
 
-                <p class="spacing" v-if="searchResults.length == 0">No results for this query. Maybe <a href="https://github.com/xarantolus/filtrite#using-your-own-filter-lists">create a new filter</a>?</p>
+                <p class="spacing" v-if="searchResults.length == 0">No results for this query. Maybe <a target="_blank" href="https://github.com/xarantolus/filtrite#using-your-own-filter-lists">create a new filter</a>?</p>
                 <ul v-else class="spacing">
                     <FilterList v-for="item in searchResults" v-bind:key="item.filter_file_url" :list="item" :search="query"></FilterList>
                 </ul>
