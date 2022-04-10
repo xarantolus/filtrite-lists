@@ -353,15 +353,17 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		// (instead of creating a new release, they just update the current release)
 		// Assets should be generated at least every 10 days or so
 		if time.Since(asset.GetUpdatedAt().Time) > 10*24*time.Hour {
+			log.Printf("[Warning] Ignoring outdated asset %q in %s/%s", datFileName, forkUser, forkRepoName)
 			continue
 		}
 
 		lists, err := util.RequestListURLs(listFile.GetDownloadURL())
 		if err != nil {
-			log.Printf("requesting list %q in %s/%s: %s\n", fn, forkUser, forkRepoName, err.Error())
+			log.Printf("[Error] Requesting list %q in %s/%s: %s\n", fn, forkUser, forkRepoName, err.Error())
 			continue
 		}
 		if len(lists) == 0 {
+			log.Printf("[Warning] List %q in %s/%s doesn't define any filterlists we could download\n", fn, forkUser, forkRepoName)
 			continue
 		}
 
