@@ -52,15 +52,10 @@ export default defineComponent({
     <li>
         <div class="card filter-box">
             <div class="card-content">
-                <span v-if="list?.stars ?? 0 > 0" style="position: absolute; top: 0; right: 0;" class="card-header-icon" aria-label="more options">⭐{{ list.stars }}</span>
+                <span v-if="list?.stars ?? 0 > 0" class="card-header-icon stars">⭐{{ list.stars }}</span>
                 <h4>
                     <Highlighter highlightClassName="highlight" class="title is-4" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.display_name" />
                 </h4>
-                <h6 class="subtitle is-6">
-                    <a target="_blank" :href="'https://github.com/' + list.repo_owner">
-                        <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="'@' + list.repo_owner" />
-                    </a>
-                </h6>
                 <details class="content has-text-left">
                     <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
                     <ul>
@@ -91,11 +86,15 @@ export default defineComponent({
     margin-bottom: 2%;
 }
 
-.subtitle {
-    margin-bottom: 0.5rem !important;
+.stars {
+    position: absolute;
+    top: 0;
+    right: 0;
+    user-select: none;
 }
 
 summary {
+    margin-top: 0.5rem !important;
     width: 100%;
     cursor: pointer;
     padding: 0.5%;

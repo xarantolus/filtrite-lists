@@ -115,10 +115,11 @@ func main() {
 	var buf bytes.Buffer
 
 	buf.WriteString("jsonp(")
-	err = json.NewEncoder(&buf).Encode(output)
+	b, err := json.Marshal(output)
 	if err != nil {
 		panic(err)
 	}
+	buf.Write(b)
 	buf.WriteString(")")
 
 	err = os.WriteFile(outputFile, buf.Bytes(), 0o666)
