@@ -13,10 +13,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: "Prepare repo for Vue build"
+      run: |
+        TMP_DIR="$(mktemp -d)"
+        cp -r filtrite-search/* "$TMP_DIR"
+        rm -rf *
+        cp -r "$TMP_DIR/*" .
+
     - id: Build-Vue
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
         username: 'xarantolus'
         reponame: 'filtrite-lists'
+        cname: 'filterlists.010.one'
         token: ${{ secrets.GITHUB_TOKEN }}
-      working-directory: filtrite-search
