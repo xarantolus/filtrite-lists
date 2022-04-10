@@ -16,9 +16,10 @@ import (
 	"time"
 	"unicode"
 
+	"xarantolus/generator/util"
+
 	"github.com/google/go-github/v43/github"
 	"golang.org/x/oauth2"
-	"xarantolus/generator/util"
 )
 
 func main() {
@@ -335,6 +336,9 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		return
 	}
 
+	// https://github.com/bromite/bromite/blob/4f10d11318703835bb201a54d606e2b8b2dd896b/build/patches/Bromite-AdBlockUpdaterService.patch#L1131
+	const bromiteMaxFilterSize = 1024 * 1024 * 10
+
 	for _, listFile := range listFiles {
 		fn := listFile.GetName()
 		// We only want text files, just like filtrite itself
@@ -354,6 +358,10 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		// Assets should be generated at least every 10 days or so
 		if time.Since(asset.GetUpdatedAt().Time) > 10*24*time.Hour {
 			log.Printf("[Warning] Ignoring outdated asset %q in %s/%s", datFileName, forkUser, forkRepoName)
+			continue
+		}
+		if asset.GetSize() > bromiteMaxFilterSize {
+			log.Printf("[Warning] Ignoring asset %q in %s/%s because it's too large", datFileName, forkUser, forkRepoName)
 			continue
 		}
 
