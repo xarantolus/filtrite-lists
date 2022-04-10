@@ -90,7 +90,7 @@ footer.ghlink {
 #app {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 1%;
+  padding: 2.5%;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
