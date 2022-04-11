@@ -171,6 +171,11 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		return
 	}
 
+	// Forks need to be at least 2 days old before we list them, sometimes people fork and delete their repo within a day
+	if time.Since(fork.GetCreatedAt().Time) < 2*24*time.Hour {
+		return
+	}
+
 	ctx := context.Background()
 
 	forkUser, forkRepoName := fork.GetOwner().GetLogin(), fork.GetName()
