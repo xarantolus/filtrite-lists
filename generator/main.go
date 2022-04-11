@@ -107,16 +107,16 @@ func main() {
 		filterListNameMappingLock.Unlock()
 	})
 
-	var output []PresentableListFile
+	var outputFilterLists []PresentableListFile
 
 	for _, info := range deduplicatedFilterlists {
-		output = append(output, makePresentable(info, filterListUrlNameMapping))
+		outputFilterLists = append(outputFilterLists, makePresentable(info, filterListUrlNameMapping))
 	}
 
 	var buf bytes.Buffer
 
 	buf.WriteString("jsonp(")
-	b, err := json.Marshal(output)
+	b, err := json.Marshal(OutputInfo{Date: time.Now().UTC(), Lists: outputFilterLists})
 	if err != nil {
 		panic(err)
 	}
@@ -127,6 +127,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("writing result file: %s\n", err.Error())
 	}
+}
+
+type OutputInfo struct {
+	Date time.Time `json:"date"`
+
+	Lists []PresentableListFile `json:"lists"`
 }
 
 func stripExtension(p string) string {
