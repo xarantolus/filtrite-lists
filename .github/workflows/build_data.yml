@@ -1,4 +1,4 @@
-name: Build filterlists
+name: Build filtrite fork data
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
     - name: Runnning build/generation script
       shell: bash
       run: |
-        go run main.go
+        go run .
       working-directory: generator
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

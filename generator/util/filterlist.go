@@ -75,3 +75,27 @@ func GetFilterListNameFromURL(url string) (name string, err error) {
 
 	return GetFilterListName(resp.Body)
 }
+
+func FilterListNameFallback(url *url.URL) {
+
+}
+
+var correctCasingReplacer = strings.NewReplacer(
+	"Ublock", "uBlock",
+	"Adblock", "AdBlock",
+)
+
+var basicTitles = map[string]bool{
+	"filter":  true,
+	"filters": true,
+	"hosts":   true,
+	"all":     true,
+}
+
+func MakeListTitle(name string) (out string) {
+	fields := strings.FieldsFunc(name, func(r rune) bool {
+		return !(unicode.IsLetter(r) || unicode.IsNumber(r))
+	})
+
+	return correctCasingReplacer.Replace(strings.Title(strings.ToLower(strings.Join(fields, " "))))
+}

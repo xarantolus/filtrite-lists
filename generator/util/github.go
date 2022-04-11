@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/google/go-github/v43/github"
@@ -36,4 +37,23 @@ func LoadAllForks(client *github.Client, owner, name string) (forks []*github.Re
 	}
 
 	return forks, nil
+}
+
+func GetAssetByName(assets []*github.ReleaseAsset, fn string) *github.ReleaseAsset {
+	for _, a := range assets {
+		if a.GetName() == fn {
+			return a
+		}
+	}
+
+	return nil
+}
+
+func GetLatestURL(a *github.ReleaseAsset, owner, repo string) string {
+	// https://github.com/USERNAME/filtrite/releases/latest/download/FILENAME.dat
+	return (&url.URL{
+		Scheme: "https",
+		Host:   "github.com",
+		Path:   fmt.Sprintf("%s/%s/releases/latest/download/%s", url.PathEscape(owner), url.PathEscape(repo), url.PathEscape(*a.Name)),
+	}).String()
 }
