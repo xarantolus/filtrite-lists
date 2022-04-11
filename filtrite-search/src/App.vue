@@ -6,22 +6,29 @@ import { jsonp } from 'vue-jsonp'
 
 const filtriteListURL = "https://github.com/xarantolus/filtrite-lists/releases/latest/download/filterlists_jsonp.js";
 
+class JSONPResponse {
+  public date : Date;
+  public lists: Array<FilterListData>;
+}
+
 export default defineComponent({
   data() {
     return {
       filter_lists: [] as Array<FilterListData>,
+      last_update_date: new Date(),
       loading: true,
       error: ""
     }
   },
   async mounted() {
     try {
-      let resp = await jsonp<Array<FilterListData>>(filtriteListURL, {
+      let resp = await jsonp<JSONPResponse>(filtriteListURL, {
         callbackQuery: 'cb',
         callbackName: 'jsonp',
       }, 15000);
 
-      this.filter_lists = resp;
+      this.filter_lists = resp.lists;
+      this.last_update_date = resp.date;
     } catch (e: any) {
       this.error = JSON.stringify(e);
     } finally {
@@ -36,7 +43,7 @@ export default defineComponent({
   <main>
     <p v-if="loading">Loading data...</p>
     <p v-else-if="error">Error loading data:<br>{{ error }}</p>
-    <ListSearch v-else :filter_lists="filter_lists"></ListSearch>
+    <ListSearch v-else :filter_lists="filter_lists" :update_date="last_update_date" ></ListSearch>
   </main>
   <footer class="ghlink">
     This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>

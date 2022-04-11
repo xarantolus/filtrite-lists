@@ -10,6 +10,10 @@ export default defineComponent({
             type: Array as PropType<Array<FilterListData>>,
             required: true,
         },
+        update_date: {
+            type: Date,
+            required: true
+        }
     },
     data() {
         const processedFilterlists = this.filter_lists.map(list => {
@@ -38,6 +42,15 @@ export default defineComponent({
         }
     },
     components: { FilterList },
+    methods: {
+        padZero(num: number) {
+            var n = num.toString()
+            if (n.length <= 1) {
+                return "0" + n;
+            }
+            return n;
+        }
+    }
 })
 </script>
 
@@ -57,9 +70,10 @@ export default defineComponent({
                 <ul v-else class="spacing">
                     <FilterList v-for="item in searchResults" v-bind:key="item.filter_file_url" :list="item" :search="query"></FilterList>
                 </ul>
+
+                <p class="help">Last data update was on {{ update_date.getUTCFullYear() }}-{{ padZero(update_date.getMonth()+1) }}-{{ padZero(update_date.getUTCDate()) }}</p>
             </div>
-        </div>
-    </div>
+        </div>  </div>
 </template>
 
 
