@@ -71,7 +71,7 @@ export default defineComponent({
                     <FilterList v-for="item in searchResults" v-bind:key="item.filter_file_url" :list="item" :search="query"></FilterList>
                 </ul>
 
-                <p class="help">Last data update was on {{ update_date.getUTCFullYear() }}-{{ padZero(update_date.getMonth()+1) }}-{{ padZero(update_date.getUTCDate()) }}</p>
+                <p class="help">Last data update was on {{ update_date.getFullYear() }}-{{ padZero(update_date.getMonth()+1) }}-{{ padZero(update_date.getDate()) }}</p>
             </div>
         </div>  </div>
 </template>
