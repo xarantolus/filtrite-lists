@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -55,6 +56,10 @@ func makePresentable(info ListFileInfo, urlTitles map[string]string) Presentable
 			Title: ut,
 		})
 	}
+
+	sort.Slice(urls, func(i, j int) bool {
+		return urls[i].Title < urls[j].Title && urls[i].URL < urls[j].URL
+	})
 
 	return PresentableListFile{
 		DisplayName:   info.Name,
