@@ -171,31 +171,31 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		return
 	}
 
+	forkUser, forkRepoName := fork.GetOwner().GetLogin(), fork.GetName()
+
 	// Forks need to be at least 2 days old before we list them, sometimes people fork and delete their repo within a day
 	if time.Since(fork.GetCreatedAt().Time) < 2*24*time.Hour {
+		log.Printf("[Warning] Ignoring fork %s/%s because it's too young", forkUser, forkRepoName)
 		return
 	}
 
 	ctx := context.Background()
-
-	forkUser, forkRepoName := fork.GetOwner().GetLogin(), fork.GetName()
-
 	fc, listFiles, _, err := client.Repositories.GetContents(ctx, forkUser, forkRepoName, "lists", nil)
 	if err != nil {
 		return
 	}
 	if fc != nil {
-		err = fmt.Errorf("invalid file \"lists\" instead of directory\n")
+		err = fmt.Errorf("invalid file \"lists\" instead of directory")
 		return
 	}
 
 	latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, forkUser, forkRepoName)
 	if err != nil {
-		err = fmt.Errorf("no latest release available: %s\n", err.Error())
+		err = fmt.Errorf("no latest release available: %s", err.Error())
 		return
 	}
 	if len(latestRelease.Assets) == 0 {
-		err = fmt.Errorf("latest release has no assets\n")
+		err = fmt.Errorf("latest release has no assets")
 		return
 	}
 
@@ -213,7 +213,7 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		datFileName := fn[:len(fn)-4] + ".dat"
 		asset := util.GetAssetByName(latestRelease.Assets, datFileName)
 		if asset == nil {
-			log.Printf("[Warning] Looks like the list %q (%q) in %s/%s is not being released\n", fn, datFileName, forkUser, forkRepoName)
+			log.Printf("[Warning] Looks like the list %q (%q) in %s/%s is not being released", fn, datFileName, forkUser, forkRepoName)
 			continue
 		}
 		// Ignore outdated repos; however still support repos that decided to always use the same release
@@ -230,11 +230,11 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 
 		lists, err := util.RequestListURLs(listFile.GetDownloadURL())
 		if err != nil {
-			log.Printf("[Error] Requesting list %q in %s/%s: %s\n", fn, forkUser, forkRepoName, err.Error())
+			log.Printf("[Error] Requesting list %q in %s/%s: %s", fn, forkUser, forkRepoName, err.Error())
 			continue
 		}
 		if len(lists) == 0 {
-			log.Printf("[Warning] List %q in %s/%s doesn't define any filterlists we could download\n", fn, forkUser, forkRepoName)
+			log.Printf("[Warning] List %q in %s/%s doesn't define any filterlists we could download", fn, forkUser, forkRepoName)
 			continue
 		}
 

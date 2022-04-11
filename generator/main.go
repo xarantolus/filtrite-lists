@@ -26,10 +26,10 @@ func main() {
 		outputFile = getEnv("OUTPUT_FILE", "filterlists_jsonp.js")
 	)
 	if strings.TrimSpace(ghToken) == "" {
-		log.Fatalf("no GITHUB_TOKEN env variable available\n")
+		log.Fatalf("no GITHUB_TOKEN env variable available")
 	}
 
-	log.Printf("[Info] Working on %s/%s\n", repoOwner, repoName)
+	log.Printf("[Info] Working on %s/%s", repoOwner, repoName)
 
 	ctx := context.Background()
 	token := oauth2.NewClient(ctx, oauth2.StaticTokenSource(
@@ -40,12 +40,12 @@ func main() {
 
 	mainRepo, _, err := client.Repositories.Get(ctx, repoOwner, repoName)
 	if err != nil {
-		log.Fatalf("loading main repo: %s\n", err.Error())
+		log.Fatalf("loading main repo: %s", err.Error())
 	}
 
 	forks, err := util.LoadAllForks(client, repoOwner, repoName)
 	if err != nil {
-		log.Fatalf("loading forks: %s\n", err.Error())
+		log.Fatalf("loading forks: %s", err.Error())
 	}
 
 	// We sort forks by an arbitrary measure of importance
@@ -55,14 +55,14 @@ func main() {
 	// Add the main repo at the beginning, regardless of count
 	forks = append([]*github.Repository{mainRepo}, forks...)
 
-	log.Printf("[Info] Fetched %d forks\n", len(forks))
+	log.Printf("[Info] Fetched %d forks", len(forks))
 
 	var filterLists []ListFileInfo
 
 	for _, fork := range forks {
 		filterLists, err = getForkInfo(client, fork, filterLists)
 		if err != nil {
-			log.Printf("[Warning] Error for %s/%s: %s\n", fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
+			log.Printf("[Warning] Error for %s/%s: %s", fork.GetOwner().GetLogin(), fork.GetName(), err.Error())
 		}
 	}
 
@@ -115,6 +115,6 @@ func main() {
 
 	err = os.WriteFile(outputFile, buf.Bytes(), 0o666)
 	if err != nil {
-		log.Fatalf("writing result file: %s\n", err.Error())
+		log.Fatalf("writing result file: %s", err.Error())
 	}
 }
