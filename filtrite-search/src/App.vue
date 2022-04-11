@@ -28,7 +28,7 @@ export default defineComponent({
       }, 15000);
 
       this.filter_lists = resp.lists;
-      this.last_update_date = resp.date;
+      this.last_update_date = new Date(resp.date);
     } catch (e: any) {
       this.error = JSON.stringify(e);
     } finally {

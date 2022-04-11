@@ -73,7 +73,8 @@ export default defineComponent({
 
                 <p class="help">Last data update was on {{ update_date.getFullYear() }}-{{ padZero(update_date.getMonth()+1) }}-{{ padZero(update_date.getDate()) }}</p>
             </div>
-        </div>  </div>
+        </div>
+    </div>
 </template>
 
 
