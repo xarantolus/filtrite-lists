@@ -58,7 +58,10 @@ func makePresentable(info ListFileInfo, urlTitles map[string]string) Presentable
 	}
 
 	sort.Slice(urls, func(i, j int) bool {
-		return urls[i].Title < urls[j].Title && urls[i].URL < urls[j].URL
+		if urls[i].Title == urls[j].Title {
+			return urls[i].URL < urls[j].URL
+		}
+		return urls[i].Title < urls[j].Title
 	})
 
 	return PresentableListFile{
