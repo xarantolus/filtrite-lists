@@ -27,7 +27,7 @@ export default defineComponent({
     },
     computed: {
         keywords(): Array<string> {
-            return this.search?.split(/\s+/) ?? [];
+            return this.search?.toLowerCase()?.split(/\s+/).filter(v => v.trim().length > 0) ?? [];
         }
     },
     methods: {
@@ -44,6 +44,12 @@ export default defineComponent({
                 this.error = "";
             }, 750);
         },
+        urlMatches(url: string): boolean {
+            if (this.keywords.length == 0) {
+                return false;
+            }
+            return this.keywords.some(kw => url.toLowerCase().includes(kw))
+        }
     }
 })
 </script>
@@ -62,6 +68,7 @@ export default defineComponent({
                         <li v-bind:key="item.url" v-for="item in list.urls">
                             <a target="_blank" :href="item.url">
                                 <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="item.title" />
+                                <span class="tag urlmatch" v-if="urlMatches(item.url)">URL match</span>
                             </a>
                         </li>
                     </ul>
@@ -76,7 +83,8 @@ export default defineComponent({
                 </a>
                 <a @click.prevent="copyURL" class="card-footer-item copy" target="_blank" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
             </footer>
-        </div>    </li>
+        </div>
+    </li>
 </template>
 
 <style>
@@ -113,5 +121,11 @@ summary {
 
 .highlight {
     background-color: var(--yellow);
+}
+
+.tag.urlmatch {
+    margin-left: 1%;
+    color: var(--font-color-on-yellow);
+    background-color: var(--yellow) !important;
 }
 </style>

@@ -83,6 +83,7 @@ func FilterListNameFallback(url *url.URL) {
 var correctCasingReplacer = strings.NewReplacer(
 	"Ublock", "uBlock",
 	"Adblock", "AdBlock",
+	"Url", "URL",
 )
 
 var basicTitles = map[string]bool{

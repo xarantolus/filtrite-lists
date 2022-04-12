@@ -7,7 +7,7 @@ import { jsonp } from 'vue-jsonp'
 const filtriteListURL = "https://github.com/xarantolus/filtrite-lists/releases/latest/download/filterlists_jsonp.js";
 
 class JSONPResponse {
-  public date : Date;
+  public date: Date;
   public lists: Array<FilterListData>;
 }
 
@@ -43,13 +43,14 @@ export default defineComponent({
   <main>
     <p v-if="loading">Loading data...</p>
     <p v-else-if="error">Error loading data:<br>{{ error }}</p>
-    <ListSearch v-else :filter_lists="filter_lists" :update_date="last_update_date" ></ListSearch>
+    <ListSearch v-else :filter_lists="filter_lists" :update_date="last_update_date"></ListSearch>
   </main>
   <footer class="ghlink">
     This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</footer>
 </template>
 
-<style>@import "../node_modules/bulma/css/bulma.min.css";
+<style>
+@import "../node_modules/bulma/css/bulma.min.css";
 @import "../node_modules/bulma-prefers-dark/css/bulma-prefers-dark.css";
 
 :root {
@@ -57,6 +58,7 @@ export default defineComponent({
   --border-color: #ccc;
   --green: #00ff55;
   --yellow: #f7ae40;
+  --font-color-on-yellow: var(--font-color);
   --blue: #6fcaff;
   --card-color: #fff;
   --button-color: #bbb;
@@ -68,6 +70,7 @@ export default defineComponent({
     --border-color: #999;
     --green: #158c11;
     --yellow: #df8b1d;
+    --font-color-on-yellow: #333;
     --blue: #004770;
     --card-color: #222;
     --button-color: #333;
