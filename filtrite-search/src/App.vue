@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ListSearch from "./ListSearch.vue";
-import type { FilterListData } from "./model/FilterList";
+import { FilterListData } from "./model/FilterList";
 import { jsonp } from 'vue-jsonp'
 
 const filtriteListURL = "https://github.com/xarantolus/filtrite-lists/releases/latest/download/filterlists_jsonp.js";
@@ -27,7 +27,7 @@ export default defineComponent({
         callbackName: 'jsonp',
       }, 15000);
 
-      this.filter_lists = resp.lists;
+      this.filter_lists = FilterListData.listFromJSON(resp.lists);
       this.last_update_date = new Date(resp.date);
     } catch (e: any) {
       this.error = JSON.stringify(e);

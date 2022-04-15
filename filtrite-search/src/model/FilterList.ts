@@ -7,11 +7,14 @@ export class FilterListData {
     public repo_name: string;
     public list_url: string;
 
+    public id: number;
+
     public static listFromJSON(obj: unknown): Array<FilterListData> {
         if (typeof obj === "string") {
             obj = JSON.parse(obj);
         }
-        return (obj as Array<FilterListData>);
+        const list = obj as Array<FilterListData>;
+        return list.map((v, idx) => ({...v,  id: idx} as FilterListData));
     }
 }
 

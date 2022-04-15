@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import type { FilterListData } from '../model/FilterList';
+import type { FilterListData } from '@/model/FilterList';
+import type { SelectionState } from '@/model/SelectionState';
 
 import Highlighter from 'vue-highlight-words';
 
@@ -14,6 +15,10 @@ export default defineComponent({
         },
         search: {
             type: String,
+        },
+        selection: {
+            type: String as PropType<SelectionState>,
+            required: true,
         }
     },
     components: {
@@ -49,42 +54,46 @@ export default defineComponent({
                 return false;
             }
             return this.keywords.some(kw => url.toLowerCase().includes(kw))
+        },
+        toggleComparison() {
+            this.$emit('comparison-toggle', this.list);
         }
     }
 })
 </script>
 
 <template>
-    <li>
-        <div class="card filter-box">
-            <div class="card-content">
-                <span v-if="list?.stars ?? 0 > 0" class="card-header-icon stars">⭐{{ list.stars }}</span>
-                <h4>
-                    <Highlighter highlightClassName="highlight" class="title is-4" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.display_name" />
-                </h4>
-                <details class="content has-text-left">
-                    <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
-                    <ul>
-                        <li v-bind:key="item.url" v-for="item in list.urls">
-                            <a target="_blank" :href="item.url">
-                                <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="item.title" />
-                                <span class="tag urlmatch" v-if="urlMatches(item.url)">URL match</span>
-                            </a>
-                        </li>
-                    </ul>
-                </details>
-            </div>
-            <footer class="card-footer">
-                <a target="_blank" :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name" class="card-footer-item github">
-                    <span class="icon" style="padding-right: 2.5%;">
-                        <img class="invert-dm" src="@/assets/GitHub-dark.png">
-                    </span>
-                    <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.repo_owner + '/' + list.repo_name" />
-                </a>
-                <a @click.prevent="copyURL" class="card-footer-item copy" target="_blank" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
-            </footer>
+    <div class="card filter-box">
+        <div class="card-content">
+            <span v-if="list?.stars ?? 0 > 0" class="card-header-icon stars">⭐{{ list.stars }}</span>
+            <h4>
+                <Highlighter highlightClassName="highlight" class="title is-4" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.display_name" />
+            </h4>
+            <details class="content has-text-left">
+                <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}</summary>
+                <ul>
+                    <li v-bind:key="item.url" v-for="item in list.urls">
+                        <a target="_blank" :href="item.url">
+                            <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="item.title" />
+                            <span class="tag urlmatch" v-if="urlMatches(item.url)">URL match</span>
+                        </a>
+                    </li>
+                </ul>
+            </details>
         </div>
-    </li>
+        <footer class="card-footer">
+            <a target="_blank" :href="'https://github.com/' + list.repo_owner + '/' + list.repo_name" class="card-footer-item github">
+                <span class="icon" style="padding-right: 2.5%;">
+                    <img class="invert-dm" src="@/assets/GitHub-dark.png">
+                </span>
+                <Highlighter highlightClassName="highlight" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.repo_owner + '/' + list.repo_name" />
+            </a>
+            <a href="#compare" @click.prevent="toggleComparison" class="card-footer-item compare">{{ selection }}</a>
+        </footer>
+        <footer class="card-footer">
+            <a @click.prevent="copyURL" class="card-footer-item copy" target="_blank" :href="list.filter_file_url">{{ error ? 'Error!' : (copied ? 'Copied!' : 'Copy filter URL') }}</a>
+        </footer>
+    </div>
 </template>
 
 <style>
@@ -110,6 +119,11 @@ summary {
 
 .copy {
     background-color: var(--green);
+    color: var(--font-color);
+}
+
+.compare {
+    background-color: var(--blue);
     color: var(--font-color);
 }
 
