@@ -45,6 +45,7 @@ export default defineComponent({
                     </li>
                 </ul>
             </details>
+            <p v-else class="has-text-left">There is no overlap between the two lists.</p>
             <details v-if="list1only.length > 0" class="content has-text-left">
                 <summary>{{ list1only.length }} {{ list1only.length == 1 ? 'list is' : 'lists are' }} only in {{ list1.display_name }}{{sameName ? ' (' + list1.repo_owner + ')' : '' }}</summary>
                 <ul>
