@@ -47,12 +47,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("loading forks: %s", err.Error())
 	}
-
-	// We sort forks by an arbitrary measure of importance
-	sort.Slice(forks, func(i, j int) bool {
-		return forks[i].GetStargazersCount() > forks[j].GetStargazersCount()
-	})
-	// Add the main repo at the beginning, regardless of count
 	forks = append([]*github.Repository{mainRepo}, forks...)
 
 	log.Printf("[Info] Fetched %d forks", len(forks))
@@ -66,6 +60,12 @@ func main() {
 		}
 	}
 
+	defaultList, err := fetchBromiteDefaultList(client)
+	if err != nil {
+		log.Printf("[Warning] Error fetching default bromite list: %s", err.Error())
+	}
+	filterLists = append(filterLists, defaultList)
+
 	// Afterwards bring it into a presentable format
 
 	var (
@@ -73,9 +73,16 @@ func main() {
 		filterListNameMappingLock sync.Mutex
 	)
 
+	// We sort lists by their star count -- duplicates with fewer stars will be elimiated in the next step
+	sort.Slice(filterLists, func(i, j int) bool {
+		return filterLists[i].Stars > filterLists[j].Stars
+	})
+
 	var deduplicatedFilterlists = deduplicateFilterlists(filterLists)
 
 	var urls = getUniqueURLs(deduplicatedFilterlists)
+
+	log.Printf("Fetching filter list titles")
 
 	parallelize(urls, func(u string) {
 		name, err := util.GetFilterListNameFromURL(u)
@@ -95,6 +102,7 @@ func main() {
 
 	var outputFilterLists []PresentableListFile
 
+	log.Printf("Generating output")
 	for _, info := range deduplicatedFilterlists {
 		outputFilterLists = append(outputFilterLists, makePresentable(info, filterListUrlNameMapping))
 	}

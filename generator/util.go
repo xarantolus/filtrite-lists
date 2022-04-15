@@ -262,3 +262,33 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 
 	return filterLists, nil
 }
+
+const (
+	bromiteDefaultOrg      = "bromite"
+	bromiteDefaultRepo     = "filters"
+	bromiteDefaultListFile = "https://raw.githubusercontent.com/bromite/filters/master/lists.txt"
+)
+
+func fetchBromiteDefaultList(client *github.Client) (l ListFileInfo, err error) {
+	ctx := context.Background()
+
+	repo, _, err := client.Repositories.Get(ctx, bromiteDefaultOrg, bromiteDefaultRepo)
+	if err != nil {
+		return
+	}
+
+	lists, err := util.RequestListURLs(bromiteDefaultListFile)
+	if err != nil {
+		return
+	}
+
+	return ListFileInfo{
+		Name:          "Bromite Default",
+		FilterFileURL: "https://www.bromite.org/filters/filters.dat",
+		Stars:         repo.GetStargazersCount(),
+		RepoOwner:     bromiteDefaultOrg,
+		RepoName:      bromiteDefaultRepo,
+		ListURL:       bromiteDefaultListFile,
+		URLs:          lists,
+	}, nil
+}
