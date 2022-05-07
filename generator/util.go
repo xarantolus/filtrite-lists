@@ -266,7 +266,7 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 const (
 	bromiteDefaultOrg      = "bromite"
 	bromiteDefaultRepo     = "filters"
-	bromiteDefaultListFile = "https://raw.githubusercontent.com/bromite/filters/master/lists.txt"
+	bromiteDefaultListFile = "https://www.bromite.org/filters/lists.txt"
 )
 
 func fetchBromiteDefaultList(client *github.Client) (l ListFileInfo, err error) {
