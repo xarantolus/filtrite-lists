@@ -71,8 +71,24 @@ export default defineComponent({
                 default:
                     return SelectionState.finish;
             }
+        },
+        isToday(date: Date): boolean {
+            const today = new Date()
+            return date.getDate() === today.getDate() &&
+                date.getMonth() === today.getMonth() &&
+                date.getFullYear() === today.getFullYear();
+        },
+        isYesterday(date: Date): boolean {
+            const yesterday = new Date()
+            yesterday.setDate(yesterday.getDate() - 1);
+            return date.getDate() === yesterday.getDate() &&
+                date.getMonth() === yesterday.getMonth() &&
+                date.getFullYear() === yesterday.getFullYear();
+        },
+        formatDate(date: Date): string {
+            return `${date.getFullYear()}-${this.padZero(date.getMonth() + 1)}-${this.padZero(date.getDate())}`
         }
-    }
+    },
 })
 </script>
 
@@ -86,7 +102,13 @@ export default defineComponent({
         <br>
         <div class="field" v-if="selected_lists.length != 2">
             <div class="control">
-                <input class="input" placeholder="Search filter lists..." autofocus type="search" :value="query" @input="event => query = (event?.target as HTMLInputElement).value" />
+                <input :disabled="filter_lists.length == 0" class="input" placeholder="Search filter lists..." autofocus type="search" :value="query" @input="event => query = (event?.target as HTMLInputElement).value" />
+                <p class="help">
+                    <template v-if="query.trim()">Found {{ searchResults.length == 1 ? 'one list' : (searchResults.length + ' lists') }} matching your query.</template>
+                    <template v-else>Currently there {{ filter_lists.length == 1 ? 'is one list' : ('are ' + filter_lists.length + ' lists') }} available.</template>
+
+                    Data was last updated on {{ formatDate(update_date) }}<template v-if="isToday(update_date)"> (today)</template><template v-else-if="isYesterday(update_date)"> (yesterday)</template>.
+                </p>
 
                 <div v-if="selected_lists.length > 0">
                     <a @click.prevent="selected_lists = []" class="card-footer-item compare stop-button" href="#end">Stop comparison</a>
@@ -99,7 +121,6 @@ export default defineComponent({
                     </li>
                 </ul>
 
-                <p class="help">Last data update was on {{ update_date.getFullYear() }}-{{ padZero(update_date.getMonth() + 1) }}-{{ padZero(update_date.getDate()) }}</p>
             </div>
         </div>
         <div v-else>

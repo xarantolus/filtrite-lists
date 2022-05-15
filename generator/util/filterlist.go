@@ -84,6 +84,7 @@ var correctCasingReplacer = strings.NewReplacer(
 	"Ublock", "uBlock",
 	"Adblock", "AdBlock",
 	"Url", "URL",
+	"Adguard", "AdGuard",
 )
 
 var basicTitles = map[string]bool{
