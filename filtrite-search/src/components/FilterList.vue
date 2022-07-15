@@ -79,7 +79,7 @@ export default defineComponent({
                 <Highlighter highlightClassName="highlight" class="title is-4" :searchWords="keywords" :autoEscape="true" :textToHighlight="list.display_name" />
             </h4>
             <details class="content has-text-left">
-                <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}<template v-if="(list.avg_downloads ?? 0) > 1">, around <span :title="list.avg_downloads">{{ round_num(list.avg_downloads!) }} downloads per release</span></template></summary>
+                <summary>{{ list.urls.length }} included list{{ list.urls.length == 1 ? '' : 's' }}<template v-if="(list.avg_downloads ?? 0) > 1">, around <span :title="list.avg_downloads!.toString()">{{ round_num(list.avg_downloads!) }} downloads per release</span></template></summary>
                 <ul>
                     <li v-bind:key="item.url" v-for="item in list.urls">
                         <a target="_blank" :href="item.url">
