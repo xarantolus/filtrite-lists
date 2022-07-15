@@ -12,9 +12,10 @@ import (
 	"sync"
 	"time"
 
+	"xarantolus/generator/util"
+
 	"github.com/google/go-github/v43/github"
 	"golang.org/x/oauth2"
-	"xarantolus/generator/util"
 )
 
 func main() {
@@ -73,9 +74,9 @@ func main() {
 		filterListNameMappingLock sync.Mutex
 	)
 
-	// We sort lists by their star count -- duplicates with fewer stars will be elimiated in the next step
+	// We sort lists by their download count -- duplicates with fewer downloads will be elimiated in the next step
 	sort.Slice(filterLists, func(i, j int) bool {
-		return filterLists[i].Stars > filterLists[j].Stars
+		return filterLists[i].AverageDownloads > filterLists[j].AverageDownloads
 	})
 
 	var deduplicatedFilterlists = deduplicateFilterlists(filterLists)

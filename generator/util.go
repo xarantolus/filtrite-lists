@@ -11,8 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/go-github/v43/github"
 	"xarantolus/generator/util"
+
+	"github.com/google/go-github/v43/github"
 )
 
 type OutputInfo struct {
@@ -26,7 +27,8 @@ type ListFileInfo struct {
 
 	FilterFileURL string `json:"filter_file_url"`
 
-	Stars int `json:"stars"`
+	Stars            int `json:"stars"`
+	AverageDownloads int `json:"avg_downloads"`
 
 	RepoOwner string `json:"repo_owner"`
 	RepoName  string `json:"repo_name"`
@@ -65,13 +67,14 @@ func makePresentable(info ListFileInfo, urlTitles map[string]string) Presentable
 	})
 
 	return PresentableListFile{
-		DisplayName:   info.Name,
-		URLs:          urls,
-		FilterFileURL: info.FilterFileURL,
-		Stars:         info.Stars,
-		RepoOwner:     info.RepoOwner,
-		RepoName:      info.RepoName,
-		ListURL:       info.ListURL,
+		DisplayName:      info.Name,
+		URLs:             urls,
+		FilterFileURL:    info.FilterFileURL,
+		Stars:            info.Stars,
+		AverageDownloads: info.AverageDownloads,
+		RepoOwner:        info.RepoOwner,
+		RepoName:         info.RepoName,
+		ListURL:          info.ListURL,
 	}
 }
 
@@ -81,7 +84,8 @@ type PresentableListFile struct {
 
 	FilterFileURL string `json:"filter_file_url"`
 
-	Stars int `json:"stars"`
+	Stars            int `json:"stars"`
+	AverageDownloads int `json:"avg_downloads"`
 
 	RepoOwner string `json:"repo_owner"`
 	RepoName  string `json:"repo_name"`
@@ -207,6 +211,28 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		return
 	}
 
+	releaseList, _, err := client.Repositories.ListReleases(ctx, forkUser, forkRepoName, &github.ListOptions{
+		PerPage: 100,
+	})
+	if err != nil {
+		return
+	}
+	var counts = make(map[string]int)
+	for _, release := range releaseList {
+		for _, asset := range release.Assets {
+			if strings.HasSuffix(asset.GetName(), ".dat") {
+				counts[asset.GetName()] += asset.GetDownloadCount()
+			}
+		}
+	}
+	var avgCounts = make(map[string]int)
+	if len(counts) > 0 {
+		for k, v := range counts {
+			// This assumes that all releases have all assets, which is wrong, but also isn't that bad
+			avgCounts[k] = v / len(releaseList)
+		}
+	}
+
 	// https://github.com/bromite/bromite/blob/4f10d11318703835bb201a54d606e2b8b2dd896b/build/patches/Bromite-AdBlockUpdaterService.patch#L1131
 	const bromiteMaxFilterSize = 1024 * 1024 * 10
 
@@ -253,6 +279,8 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 			RepoName:  forkRepoName,
 			URLs:      lists,
 
+			AverageDownloads: avgCounts[datFileName],
+
 			ListURL:       listFile.GetDownloadURL(),
 			FilterFileURL: util.GetLatestURL(asset, forkUser, forkRepoName),
 
@@ -283,12 +311,13 @@ func fetchBromiteDefaultList(client *github.Client) (l ListFileInfo, err error) 
 	}
 
 	return ListFileInfo{
-		Name:          "Bromite Default",
-		FilterFileURL: "https://www.bromite.org/filters/filters.dat",
-		Stars:         repo.GetStargazersCount(),
-		RepoOwner:     bromiteDefaultOrg,
-		RepoName:      bromiteDefaultRepo,
-		ListURL:       bromiteDefaultListFile,
-		URLs:          lists,
+		Name:             "Bromite Default",
+		FilterFileURL:    "https://www.bromite.org/filters/filters.dat",
+		Stars:            repo.GetStargazersCount(),
+		RepoOwner:        bromiteDefaultOrg,
+		RepoName:         bromiteDefaultRepo,
+		AverageDownloads: -1,
+		ListURL:          bromiteDefaultListFile,
+		URLs:             lists,
 	}, nil
 }
