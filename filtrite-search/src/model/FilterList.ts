@@ -3,6 +3,7 @@ export class FilterListData {
     public urls: Array<URLInfo>;
     public filter_file_url: string;
     public stars: number | null;
+    public avg_downloads: number | null;
     public repo_owner: string;
     public repo_name: string;
     public list_url: string;
