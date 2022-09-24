@@ -98,6 +98,8 @@ export default defineComponent({
         <div class="has-text-left">
             <p>This page shows active forks of the <a target="_blank" href="https://github.com/xarantolus/filtrite">filtrite</a> project, a generator for custom AdBlock lists for <a target="_blank" href="https://bromite.org">Bromite</a>.</p>
             <p>Find a list matching your criteria (e.g. a list for your country), copy its filter URL and configure it as "Filters URL" in Bromites' AdBlock settings.</p>
+            <p>This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</p>
+            <p>You might also be interested in my <a target="_blank" href="https://github.com/xarantolus/bromite-userscripts">UserScripts for Bromite</a> that provide additional blocking capabilities.</p>
         </div>
         <br>
         <div class="field" v-if="selected_lists.length != 2">
