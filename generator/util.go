@@ -233,8 +233,8 @@ func getForkInfo(client *github.Client, fork *github.Repository, filterLists []L
 		}
 	}
 
-	// https://github.com/bromite/bromite/blob/4f10d11318703835bb201a54d606e2b8b2dd896b/build/patches/Bromite-AdBlockUpdaterService.patch#L1131
-	const bromiteMaxFilterSize = 1024 * 1024 * 10
+	// https://github.com/bromite/bromite/blob/6f40f8341ab3fbcab458c10fe7b6bbcb8f881404/build/patches/Bromite-subresource-adblocker.patch#L1160-L1161
+	const bromiteMaxFilterSize = 1024 * 1024 * 20
 
 	for _, listFile := range listFiles {
 		fn := listFile.GetName()
