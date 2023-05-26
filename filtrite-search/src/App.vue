@@ -44,7 +44,7 @@ export default defineComponent({
     <p v-if="loading">Loading data...
       <br>This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.
     </p>
-    <p v-else-if="error">Error loading data:<br>{{ error }}<br>This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to report any issues.</p>
+    <p v-else-if="error">Error loading data:<br>{{ error }}<br>This page is <a target="_blank" href="https://github.com/xarantolus/filtrite-lists">open-source</a>, please feel free to add improvements or report any issues.</p>
     <ListSearch v-else :filter_lists="filter_lists" :update_date="last_update_date"></ListSearch>
   </main>
 </template>
